@@ -47,8 +47,9 @@ typedef struct {
  *
  * @param i2cFreq The frequency of the i2c line. Should always be 400000 at the moment
  * @param sysFreq This is the system clock of the host device
+ * @return 0 if initialisation was successful
  */
-void IMU_Init(uint32_t i2cFreq, uint32_t sysFreq);
+uint8_t IMU_Init(uint32_t i2cFreq, uint32_t sysFreq);
 
 /**
  * Sets up the MPU60x0 device to read data registers for the MAG3110 in a burst fasion (hopefully)
@@ -61,7 +62,11 @@ void IMU_SetMPUMaster(void);
  * @param mpuData MPU6050_Data struct pointer
  * @param magData MAG3110_Data struct pointer
  */
-void IMU_GetData(MPU6050_Data *mpuData, MAG3110_Data *magData);
+void IMU_GetData();//MPU6050_Data *mpuData, MAG3110_Data *magData);
+
+void IMU_CopyI2CData(MPU6050_Data *mpuData, MAG3110_Data *magData);
+
+void IMU_CopyOutput(IMU_Data *imuData, MPU6050_Data *mpuData, MAG3110_Data *magData);
 
 /**
  * Normalizes the raw bit data into their respective units

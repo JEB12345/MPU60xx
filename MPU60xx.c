@@ -60,6 +60,7 @@ void MPU60xx_Init(uint8_t rangeOfAccel, uint8_t rangeOfGyro, bool enable_passthr
 	// register every time.
 	uint8_t tmp = I2C_ReadFromReg(MPU60XX_ADDRESS, RA_INT_PIN_CONFIG);
 	I2C_WriteToReg(MPU60XX_ADDRESS, RA_INT_PIN_CONFIG, ((tmp | (1 << 4))));
+        //I2C_WriteToReg(MPU60XX_ADDRESS, RA_INT_PIN_CONFIG, tmp &0b11101111);//((tmp | (1 << 4))));
 
 	// Allow for slave devices connected to the Aux I2C pins
 	MPU60xx_SetI2CAuxPassthrough(enable_passthrough);
@@ -73,7 +74,7 @@ void MPU60xx_Init(uint8_t rangeOfAccel, uint8_t rangeOfGyro, bool enable_passthr
 
 	// Turn on data ready interrupts so the host processor can read data when it's ready.
 	// We disable all other interrupt sources for the INT pin
-	I2C_WriteToReg(MPU60XX_ADDRESS, RA_INT_ENABLE, 0x01);
+	I2C_WriteToReg(MPU60XX_ADDRESS, RA_INT_ENABLE, 0x01 | 0b10000);
 }
 
 void MPU60xx_SetEnabled(bool enabled)

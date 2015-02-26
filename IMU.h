@@ -78,7 +78,7 @@ void IMU_CopyOutput(IMU_Data *imuData, MPU6050_Data *mpuData, MAG3110_Data *magD
  * @param magData MAG3110_Data datatype which holds the Mag data
  * @param normData IMU_Data this holds the normalized output data
  */
-void IMU_normalizeData(MPU6050_Data mpuData, MAG3110_Data magData, IMU_Data *normData);
+void IMU_normalizeData(MPU6050_Data *mpuData, MAG3110_Data *magData, IMU_Data *normData);
 
 /**
  * Updates the internal IMU algorithm with data from a new timestep.

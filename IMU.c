@@ -101,16 +101,16 @@ void IMU_CopyOutput(IMU_Data *imuData, MPU6050_Data *mpuData, MAG3110_Data *magD
     CO(mag_mag_z_norm) = imuData->magZ;
 
     CO(accel_accel_x_raw) = mpuData->accelX;
-    CO(accel_accel_x_raw) = mpuData->accelY;
-    CO(accel_accel_x_raw) = mpuData->accelZ;
+    CO(accel_accel_y_raw) = mpuData->accelY;
+    CO(accel_accel_z_raw) = mpuData->accelZ;
 
     CO(gyro_gyro_x_raw) = mpuData->gyroX;
-    CO(gyro_gyro_x_raw) = mpuData->gyroY;
-    CO(gyro_gyro_x_raw) = mpuData->gyroZ;
+    CO(gyro_gyro_y_raw) = mpuData->gyroY;
+    CO(gyro_gyro_z_raw) = mpuData->gyroZ;
 
     CO(mag_mag_x_raw) = magData->magX;
-    CO(mag_mag_x_raw) = magData->magY;
-    CO(mag_mag_x_raw) = magData->magZ;
+    CO(mag_mag_y_raw) = magData->magY;
+    CO(mag_mag_z_raw) = magData->magZ;
 }
 
 void IMU_CopyI2CData(MPU6050_Data *mpuData, MAG3110_Data *magData)
@@ -118,17 +118,17 @@ void IMU_CopyI2CData(MPU6050_Data *mpuData, MAG3110_Data *magData)
     if (i2c_internal_ret == RET_OK) {
         mpuData->accelX = i2c_internal_data[1];
         mpuData->accelX |= ((uint16_t) i2c_internal_data[0]) << 8;
-        mpuData->accelY = i2c_internal_data[3 ];
+        mpuData->accelY = i2c_internal_data[3];
         mpuData->accelY |= ((uint16_t) i2c_internal_data[2]) << 8;
-        mpuData->accelZ = i2c_internal_data[5 ];
+        mpuData->accelZ = i2c_internal_data[5];
         mpuData->accelZ |= ((uint16_t) i2c_internal_data[4]) << 8;
-        mpuData->temp = i2c_internal_data[7 ];
+        mpuData->temp = i2c_internal_data[7];
         mpuData->temp |= ((uint16_t) i2c_internal_data[6]) << 8;
         mpuData->gyroX = i2c_internal_data[9];
         mpuData->gyroX |= ((uint16_t) i2c_internal_data[8]) << 8;
         mpuData->gyroY = i2c_internal_data[11];
         mpuData->gyroY |= ((uint16_t) i2c_internal_data[10]) << 8;
-        mpuData->gyroZ = i2c_internal_data[13 ];
+        mpuData->gyroZ = i2c_internal_data[13];
         mpuData->gyroZ |= ((uint16_t) i2c_internal_data[12]) << 8;
     }
 }
@@ -263,7 +263,7 @@ void IMU_GetData()
 //	}
 }
 
-void IMU_normalizeData(MPU6050_Data mpuData, MAG3110_Data magData, IMU_Data *normData)
+void IMU_normalizeData(MPU6050_Data *mpuData, MAG3110_Data *magData, IMU_Data *normData)
 {
 	// Derive Normalization Factor
 	float accelNormalizer = 16384.0 / (accelRange + 1);
@@ -272,17 +272,17 @@ void IMU_normalizeData(MPU6050_Data mpuData, MAG3110_Data magData, IMU_Data *nor
 
 	// Normalize Accel, Gyro, and Mag data
 	// Accels are in units of m/s^2
-	normData->accelX = (mpuData.accelX / accelNormalizer) * G_FORCE;
-	normData->accelY = (mpuData.accelY / accelNormalizer) * G_FORCE;
-	normData->accelZ = (mpuData.accelZ / accelNormalizer) * G_FORCE;
-	// Gyros are in Degrees/s
-	normData->gyroX = (mpuData.gyroX / gyroNormalizer);
-	normData->gyroY = (mpuData.gyroY / gyroNormalizer);
-	normData->gyroZ = (mpuData.gyroZ / gyroNormalizer);
+	normData->accelX = (mpuData->accelX / accelNormalizer) * G_FORCE;
+	normData->accelY = (mpuData->accelY / accelNormalizer) * G_FORCE;
+	normData->accelZ = (mpuData->accelZ / accelNormalizer) * G_FORCE;
+	// Gyros are sin Degrees/s
+	normData->gyroX = (mpuData->gyroX / gyroNormalizer);
+	normData->gyroY = (mpuData->gyroY / gyroNormalizer);
+	normData->gyroZ = (mpuData->gyroZ / gyroNormalizer);
 	// Mags are in micro Teslas
-	normData->magX = (magData.magX / magNormalizer);
-	normData->magY = (magData.magY / magNormalizer);
-	normData->magZ = (magData.magZ / magNormalizer);
+	normData->magX = (magData->magX / magNormalizer);
+	normData->magY = (magData->magY / magNormalizer);
+	normData->magZ = (magData->magZ / magNormalizer);
 }
 
 void IMU_UpdateIMU(const IMU_Data *newData)

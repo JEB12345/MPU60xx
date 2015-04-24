@@ -312,7 +312,7 @@ return_value_t i2c_1_read(uint8_t address, uint8_t command, uint16_t num_bytes,
         op->command = command;
         op->num_bytes = num_bytes;
         for(i=0;i<num_bytes;++i){
-            output[i] = 0;
+            output[i] = 0xFF;
         }
         op->output = output;
         op->status_out = status_out;

@@ -64,6 +64,12 @@ void IMU_SetMPUMaster(void);
  */
 void IMU_GetData();//MPU6050_Data *mpuData, MAG3110_Data *magData);
 
+/**
+ * This function read the bytes ready to be read.
+ * 14 bytes for IMU and 20 for AHRS
+ */
+void IMU_GetCount();
+
 void IMU_CopyI2CData(MPU6050_Data *mpuData, MAG3110_Data *magData);
 
 void IMU_CopyOutput(IMU_Data *imuData, MPU6050_Data *mpuData, MAG3110_Data *magData);

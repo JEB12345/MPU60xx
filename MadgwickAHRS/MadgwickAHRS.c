@@ -22,6 +22,7 @@
 // Definitions
 
 #define sampleFreq	200.0f		// sample frequency in Hz
+//#define betaDef         0.1f
 #define betaDef		0.15115f	// 2 * proportional gain -> Derived from equation (50) in Madgwick's Internal Report found:
 					// http://www.x-io.co.uk/res/doc/madgwick_internal_report.pdf
 					// omega-dot = 10 degrees/sec

@@ -15,7 +15,7 @@
 uint8_t accelRange;
 uint8_t gyroRange;
 
-volatile uint8_t i2c_internal_data[16];
+volatile uint8_t i2c_internal_data[20];
 volatile uint8_t i2c_internal_count[2];
 volatile return_value_t i2c_internal_ret;
 volatile return_value_t i2c_internal_ret_count;
@@ -54,22 +54,22 @@ void IMU_SetMPUMaster(void)
     // Disables i2c aux passthrough and sets the MPU as a master on the aux line
     MPU60xx_SetI2CAuxPassthrough(false);
     
-//    	// Writes configuration bits for the MPU i2c master
-//    	// Enables wait for external data for sync, and read characteristics
-//    	// Also sets the MPU master i2c clock at 400kHz
-//    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_I2C_MST_CTRL, (0x40 | 0xD));
-//
-//    	// Write the MAG3110 address (0x0E) to the Slave 0 address register
-//    	// Also sets the Slave 0 read/write bit as a read transaction
-//    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_SLV0_ADDR, (1 << 7) | MAG3110_ADDRESS);
-//
-//    	// Writes the Address to start reading from as the MAG3110 X MSB register (0x01)
-//    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_SLV0_REG, MAG_OUT_X_MSB);
-//
-//    	// This register controls how the MPU will retrieve data from Slave 0
-//    	// This write will enable Slave 0, Set grouping of words to be
-//    	// Odd then Even (since MAG_OUT_X_MSB = 0x01) and reads 6 bytes
-//    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_SLV0_CTRL, (0x90 | 0x6));
+    	// Writes configuration bits for the MPU i2c master
+    	// Enables wait for external data for sync, and read characteristics
+    	// Also sets the MPU master i2c clock at 400kHz
+    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_I2C_MST_CTRL, (0x40 | 0xD));
+
+    	// Write the MAG3110 address (0x0E) to the Slave 0 address register
+    	// Also sets the Slave 0 read/write bit as a read transaction
+    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_SLV0_ADDR, (1 << 7) | MAG3110_ADDRESS);
+
+    	// Writes the Address to start reading from as the MAG3110 X MSB register (0x01)
+    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_SLV0_REG, MAG_OUT_X_MSB);
+
+    	// This register controls how the MPU will retrieve data from Slave 0
+    	// This write will enable Slave 0, Set grouping of words to be
+    	// Odd then Even (since MAG_OUT_X_MSB = 0x01) and reads 6 bytes
+    	I2C_WriteToReg(MPU60XX_ADDRESS, RA_SLV0_CTRL, (0x90 | 0x6));
 
     // Enables FIFO for Temp, Gyros, Accels, and Slave 0 data
     I2C_WriteToReg(MPU60XX_ADDRESS, RA_FIFO_EN, 0xF9); //0xF9: with mag data / 0xF8: without mag data
@@ -135,6 +135,16 @@ void IMU_CopyI2CData(MPU6050_Data *mpuData, MAG3110_Data *magData)
         mpuData->gyroY |= ((uint16_t) i2c_internal_data[10]) << 8;
         mpuData->gyroZ = i2c_internal_data[13];
         mpuData->gyroZ |= ((uint16_t) i2c_internal_data[12]) << 8;
+
+        magData->mag_X_msb = i2c_internal_data[14];
+        magData->mag_X_lsb = i2c_internal_data[15];
+        magData->magX = (((int16_t) magData->mag_X_msb) << 8) | magData->mag_X_lsb;
+        magData->mag_Y_msb = i2c_internal_data[16];
+        magData->mag_Y_lsb = i2c_internal_data[17];
+        magData->magY = (((int16_t) magData->mag_Y_msb) << 8) | magData->mag_Y_lsb;
+        magData->mag_Z_msb = i2c_internal_data[18];
+        magData->mag_Z_lsb = i2c_internal_data[19];
+        magData->magZ = (((int16_t) magData->mag_Z_msb) << 8) | magData->mag_Z_lsb;
     } else if(i2c_internal_ret != RET_OK ) {
         flag = 1;
     }
@@ -168,7 +178,7 @@ void IMU_GetCount()
     if (i2c_internal_ret == RET_OK || i2c_internal_ret == RET_ERROR) {
         //start new read
                 i2c_internal_ret = RET_UNKNOWN;
-                i2c_1_read(MPU60XX_ADDRESS, RA_FIFO_R_W, 14, i2c_internal_data, &i2c_internal_ret);
+                i2c_1_read(MPU60XX_ADDRESS, RA_FIFO_R_W, 20, i2c_internal_data, &i2c_internal_ret);
 
     }
 
